@@ -1,0 +1,41 @@
+{
+  "name": "zaengle/laravel-security-notifications",
+  "description": "A package to notify users of security changes",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Zaengle",
+      "email": "info@zaengle.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Zaengle\\LaravelSecurityNotifications\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Zaengle\\LaravelSecurityNotifications\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "*"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "require-dev": {
+    "laravel/pint": "^1.14",
+    "orchestra/testbench": "^9.0",
+    "pestphp/pest": "^2.34",
+    "phpstan/phpstan": "^1.10"
+  }
+}
