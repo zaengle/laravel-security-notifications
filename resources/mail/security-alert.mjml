@@ -1,0 +1,17 @@
+<!-- @TODO: Style -->
+<mjml>
+    <mj-body>
+        <mj-section>
+            <mj-column>
+                <mj-text>Hello!</mj-text>
+                <mj-text>There have been recent changes to your account. The following fields have been updated.</mj-text>
+                <mj-raw>@foreach($fields as $field)</mj-raw>
+                    <mj-text>- {{ $field }}</mj-text>
+                <mj-raw>@endforeach</mj-raw>
+                <mj-text>If you did not make this change, please report this immediately.</mj-text>
+                <mj-text>If you intentionally changed your account, please ignore this notification.</mj-text>
+                <mj-text>Thank you.</mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

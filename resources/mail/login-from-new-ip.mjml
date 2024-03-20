@@ -1,0 +1,15 @@
+<!-- @TODO: Style -->
+<mjml>
+    <mj-body>
+        <mj-section>
+            <mj-column>
+                <mj-text>New sign in to Garbanzo</mj-text>
+                <mj-text>Account: {{ $login->user->email }}</mj-text>
+                <mj-text>IP: {{ $login->ip_address }}</mj-text>
+                <mj-text>Location: {{ $login->location_data['city'] }}, {{ $login->location_data['region'] }}, {{ $login->location_data['countryCode'] }}</mj-text>
+                <mj-text>Time: {{ $login->last_login_at->format('m/d/o, h:i:s A T') }}</mj-text>
+                <mj-text>If this is expected you may ignore this email. If not, please reset your password immediately.</mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>
