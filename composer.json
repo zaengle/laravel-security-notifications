@@ -10,7 +10,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "Zaengle\\LaravelSecurityNotifications\\": "src"
+      "Zaengle\\LaravelSecurityNotifications\\": "src",
+      "Zaengle\\LaravelSecurityNotifications\\Database\\Factories\\": "database/factories"
     }
   },
   "autoload-dev": {
@@ -36,6 +37,7 @@
     "laravel/pint": "^1.14",
     "orchestra/testbench": "^9.0",
     "pestphp/pest": "^2.34",
+    "pestphp/pest-plugin-laravel": "^2.3",
     "phpstan/phpstan": "^1.10"
   }
 }

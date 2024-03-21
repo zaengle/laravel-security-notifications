@@ -5,7 +5,7 @@ namespace Zaengle\LaravelSecurityNotifications\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static process()
+ * @method static process(string $ipAddress): void
  */
 class IPAddress extends Facade
 {

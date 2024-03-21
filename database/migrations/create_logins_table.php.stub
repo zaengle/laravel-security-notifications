@@ -10,12 +10,15 @@ class CreateLoginsTable extends Migration
     {
         Schema::create('logins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->unsignedBigInteger('user_id');
+            $table->string('user_type');
             $table->ipAddress('ip_address');
             $table->dateTime('first_login_at');
             $table->dateTime('last_login_at');
             $table->json('location_data');
             $table->timestamps();
+
+            $table->unique(['user_id', 'user_type', 'ip_address']);
         });
     }
 

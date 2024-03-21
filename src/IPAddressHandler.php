@@ -11,13 +11,20 @@ readonly class IPAddressHandler
     {
         if (
             $login = Login::query()
-                ->where('ip_address', $ipAddress)
-                ->where('user_id', auth()->id())
+                ->where([
+                    'ip_address' => $ipAddress,
+                    'user_id' => auth()->id(),
+                    'user_type' => auth()->user()->getMorphClass(),
+                ])
                 ->first()
         ) {
             $login->update(['last_login_at' => now()]);
         } else {
-            ProcessNewIPAddress::dispatch($ipAddress);
+            ProcessNewIPAddress::dispatch(
+                ipAddress: $ipAddress,
+                userId: auth()->id(),
+                userType: auth()->user()->getMorphClass(),
+            );
         }
     }
 }

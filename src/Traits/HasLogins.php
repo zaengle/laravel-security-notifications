@@ -3,10 +3,11 @@
 namespace Zaengle\LaravelSecurityNotifications\Traits;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Zaengle\LaravelSecurityNotifications\Events\SecureFieldsUpdated;
-use Zaengle\LaravelSecurityNotifications\Facades\IPAddress;
+use Zaengle\LaravelSecurityNotifications\Models\Login;
 
-trait SendSecurityNotification
+trait HasLogins
 {
     public array $secureFields = [
         'email',
@@ -19,7 +20,7 @@ trait SendSecurityNotification
         return $this->getOriginal('email');
     }
 
-    public function bootSendSecurityNotifications(): void
+    public static function bootHasLogins(): void
     {
         if (env('SEND_SECURITY_NOTIFICATIONS', true)) {
             static::updated(function (Model $model) {
@@ -30,5 +31,10 @@ trait SendSecurityNotification
                 }
             });
         }
+    }
+
+    public function logins(): MorphMany
+    {
+        return $this->morphMany(Login::class, 'user');
     }
 }

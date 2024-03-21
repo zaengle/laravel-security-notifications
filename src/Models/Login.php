@@ -2,12 +2,17 @@
 
 namespace Zaengle\LaravelSecurityNotifications\Models;
 
-use Illuminate\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Foundation\Auth\User;
+use Zaengle\LaravelSecurityNotifications\Database\Factories\LoginFactory;
 
 class Login extends Model
 {
+    use HasFactory;
+
     protected $table = 'logins';
 
     protected $guarded = [];
@@ -18,8 +23,13 @@ class Login extends Model
         'location_data' => 'array',
     ];
 
-    public function user(): BelongsTo
+    protected static function newFactory(): Factory
     {
-        return $this->belongsTo(Authenticatable::class);
+        return LoginFactory::new();
+    }
+
+    public function user(): MorphTo
+    {
+        return $this->morphTo();
     }
 }
