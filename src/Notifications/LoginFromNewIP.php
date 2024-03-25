@@ -22,7 +22,8 @@ class LoginFromNewIP extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
+            ->subject('Login from new location')
             ->view('security-notifications::mail.login-from-new-location', [
                 'login' => $this->login,
             ]);

@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Zaengle\LaravelSecurityNotifications\Events\SecureFieldsUpdated;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 
-trait HasLogins
+trait Securable
 {
-    public array $secureFields = [
+    public static array $secureFields = [
         'email',
         'username',
         'password',
@@ -20,11 +20,11 @@ trait HasLogins
         return $this->getOriginal('email');
     }
 
-    public static function bootHasLogins(): void
+    public static function bootSecurable(): void
     {
         if (env('SEND_SECURITY_NOTIFICATIONS', true)) {
             static::updated(function (Model $model) {
-                $changedSecureFields = collect($model->getChanges())->only($this->secureFields);
+                $changedSecureFields = collect($model->getChanges())->only(self::$secureFields);
 
                 if ($changedSecureFields->count()) {
                     event(new SecureFieldsUpdated($model, $changedSecureFields->toArray()));

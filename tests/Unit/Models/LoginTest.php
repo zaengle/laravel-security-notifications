@@ -16,5 +16,5 @@ test('login belongs to a user', function () {
         ],
     ]);
 
-    expect($user->logins->first()->contains($login))->toBeTrue();
+    expect($user->logins->first()->is($login))->toBeTrue();
 });

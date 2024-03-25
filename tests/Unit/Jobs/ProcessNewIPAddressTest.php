@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;

@@ -11,11 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Factories\UserFactory;
-use Zaengle\LaravelSecurityNotifications\Traits\HasLogins;
+use Zaengle\LaravelSecurityNotifications\Traits\Securable;
 
 class User extends Model implements AuthorizableContract, AuthenticatableContract
 {
-    use HasLogins, Authorizable, Authenticatable, HasFactory, Notifiable;
+    use Securable, Authorizable, Authenticatable, HasFactory, Notifiable;
 
     protected $guarded = [];
 

@@ -24,7 +24,8 @@ class SecureFieldsUpdated extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
+            ->subject('Security Alert')
             ->view('security-notifications::mail.security-alert', [
                 'fields' => $this->fields,
             ]);
