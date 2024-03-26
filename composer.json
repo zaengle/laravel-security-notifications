@@ -39,5 +39,8 @@
     "pestphp/pest": "^2.34",
     "pestphp/pest-plugin-laravel": "^2.3",
     "phpstan/phpstan": "^1.10"
+  },
+  "scripts": {
+    "test": "./vendor/bin/pest"
   }
 }
