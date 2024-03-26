@@ -1,3 +1,6 @@
+![Tests](https://github.com/zaengle/laravel-security-notifications/workflows/Tests/badge.svg?branch=main)
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+
 ![background hero](hero-image.jpg)
 
 # Laravel Security Notifications
@@ -98,6 +101,10 @@ There are two views that can be customized. Each with access to specific data:
   - Has access to a `$fields` array which contains the fields that were updated.
 - `login-from-new-ip.blade.php`
   - Has access to a `$login` variable which is an instance of the `Zaengle\LaravelSecurityNotifications\Models\Login` model.
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
 ## Credits
 
