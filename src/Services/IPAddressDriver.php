@@ -5,7 +5,7 @@ namespace Zaengle\LaravelSecurityNotifications\Services;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 
-class IPAddress extends DigestIPAddress
+readonly class IPAddressDriver implements DigestIPAddress
 {
     public function __construct(
         private readonly string $ipAddress,

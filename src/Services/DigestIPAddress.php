@@ -2,7 +2,7 @@
 
 namespace Zaengle\LaravelSecurityNotifications\Services;
 
-abstract class DigestIPAddress
+interface DigestIPAddress
 {
-    abstract public function handle(): void;
+    public function handle(): void;
 }

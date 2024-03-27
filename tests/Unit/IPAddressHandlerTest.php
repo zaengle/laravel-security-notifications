@@ -1,11 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Config;
+use Zaengle\LaravelSecurityNotifications\Exceptions\IPAddressDriverMissingException;
 use Zaengle\LaravelSecurityNotifications\Facades\IPAddress;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Models\User;
-use function Pest\Laravel\actingAs;
+use Zaengle\LaravelSecurityNotifications\Tests\Setup\Services\CustomIPAddressDriver;
+use function Pest\Laravel\assertDatabaseHas;
 
 it('processes a new ip address', function () {
     Bus::fake();
@@ -41,3 +44,26 @@ it('processes an existing ip address', function () {
 
     expect($login->fresh()->last_login_at->toDateString())->toEqual(now()->toDateString());
 });
+
+it('processes an ip address with a custom driver', function () {
+    Config::set('security-notifications.ip_address_driver', CustomIPAddressDriver::class);
+
+    IPAddress::process([
+        'ipAddress' => '127.0.0.1',
+    ]);
+
+    assertDatabaseHas('logins', [
+        'ip_address' => '127.0.0.1',
+        'user_id' => 1,
+        'user_type' => User::class,
+        'location_data' => json_encode(['custom' => 'driver']),
+    ]);
+});
+
+it('throws an exception if the ip address driver is missing', function () {
+    Config::set('security-notifications.ip_address_driver', null);
+
+    IPAddress::process([
+        'ipAddress' => '127.0.0.1',
+    ]);
+})->expectException(IPAddressDriverMissingException::class);

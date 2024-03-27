@@ -14,5 +14,5 @@ return [
     ],
 
     // Configure the IP address driver
-    'ip_address_driver' => \Zaengle\LaravelSecurityNotifications\Services\IPAddress::class,
+    'ip_address_driver' => \Zaengle\LaravelSecurityNotifications\Services\IPAddressDriver::class,
 ];
