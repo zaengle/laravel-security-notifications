@@ -11,7 +11,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
-use Zaengle\LaravelSecurityNotifications\Notifications\LoginFromNewIP;
 
 class ProcessNewIPAddress implements ShouldQueue
 {
@@ -46,8 +45,10 @@ class ProcessNewIPAddress implements ShouldQueue
             'location_data' => $ipLocationData,
         ]);
 
-        if (env('SEND_SECURITY_NOTIFICATIONS', true)) {
-            $this->user->notify(new LoginFromNewIP($login));
+        if (config('security-notifications.send_notifications')) {
+            $notificationClass = config('security-notifications.notifications.secure_login');
+
+            $this->user->notify(new $notificationClass($login));
         }
     }
 }

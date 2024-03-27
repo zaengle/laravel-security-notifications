@@ -22,7 +22,7 @@ trait Securable
 
     public static function bootSecurable(): void
     {
-        if (env('SEND_SECURITY_NOTIFICATIONS', true)) {
+        if (config('security-notifications.send_notifications')) {
             static::updated(function (Model $model) {
                 $changedSecureFields = collect($model->getChanges())->only(self::$secureFields);
 

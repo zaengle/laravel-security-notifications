@@ -14,9 +14,11 @@ it('processes a new ip address', function () {
 
     $user = User::factory()->create();
 
-    actingAs($user);
-
-    IPAddress::process('127.0.0.1');
+    IPAddress::process([
+        'ipAddress' => '127.0.0.1',
+        'userId' => $user->getKey(),
+        'userType' => $user->getMorphClass(),
+    ]);
 
     Bus::assertDispatched(ProcessNewIPAddress::class, function ($job) use ($user) {
         return $job->ipAddress === '127.0.0.1'
@@ -31,9 +33,11 @@ it('processes an existing ip address', function () {
         'last_login_at' => now()->subDays(5),
     ]);
 
-    actingAs($login->user);
-
-    IPAddress::process($login->ip_address);
+    IPAddress::process([
+        'ipAddress' => $login->ip_address,
+        'userId' => $login->user_id,
+        'userType' => $login->user_type,
+    ]);
 
     expect($login->fresh()->last_login_at->toDateString())->toEqual(now()->toDateString());
 });

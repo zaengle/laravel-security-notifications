@@ -9,6 +9,12 @@ class PackageServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/config.php' => config_path('security-notifications.php'),
+            ], 'config');
+        }
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'security-notifications');
 
         if ($this->app->runningInConsole()) {
@@ -31,6 +37,8 @@ class PackageServiceProvider extends ServiceProvider
         parent::register();
 
         $this->app->register(EventServiceProvider::class);
+
+        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'security-notifications');
 
         $this->app->singleton('ip-address', fn () => new IPAddressHandler);
     }

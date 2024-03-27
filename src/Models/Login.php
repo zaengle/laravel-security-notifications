@@ -12,7 +12,13 @@ class Login extends Model
 {
     use HasFactory;
 
-    protected $table = 'logins';
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return config('security-notifications.logins_table');
+    }
 
     protected $guarded = [];
 
