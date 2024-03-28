@@ -11,7 +11,7 @@ class PackageServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('security-notifications.php'),
+                __DIR__.'/../../config/config.php' => config_path('security-notifications.php'),
             ], 'config');
         }
 
@@ -38,7 +38,7 @@ class PackageServiceProvider extends ServiceProvider
 
         $this->app->register(EventServiceProvider::class);
 
-        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'security-notifications');
+        $this->mergeConfigFrom(__DIR__.'/../../../config/config.php', 'security-notifications');
 
         $this->app->singleton('ip-address', fn () => new IPAddressHandler);
     }
