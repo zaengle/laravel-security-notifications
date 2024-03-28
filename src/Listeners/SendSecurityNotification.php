@@ -15,7 +15,7 @@ class SendSecurityNotification implements ShouldQueue
     {
         $notificationClass = config('security-notifications.notifications.secure_fields');
 
-        Notification::route('mail', $event->model->getSecurityNotificationsEmail())
+        Notification::route('mail', $event->model->original_email)
             ->notify(new $notificationClass($event->fields));
     }
 }
