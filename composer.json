@@ -19,6 +19,13 @@
       "Zaengle\\LaravelSecurityNotifications\\Tests\\": "tests/"
     }
   },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Zaengle\\LaravelSecurityNotifications\\PackageServiceProvider"
+      ]
+    }
+  },
   "require": {
     "php": "^8.2",
     "illuminate/support": "*"
