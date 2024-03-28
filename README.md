@@ -19,7 +19,7 @@ This package adds an out-of-the-box, fully customizable solution for sending sec
 
 ### Publish Configuration
 
-`php artisan vendor:publish --provider="Zaengle\LaravelSecurityNotifications\PackageServiceProvider" --tag="config"`
+`php artisan vendor:publish --provider="Zaengle\LaravelSecurityNotifications\Providers\PackageServiceProvider" --tag="config"`
 
 ### Use Trait
 
@@ -61,7 +61,7 @@ public static array $secureFields = [
 The `Securable` trait also provides a `logins` relationship that can be used to track user logins. This relationship tracks all IP addresses that have logged into the user's account. In order to set up secure logins, you'll need to publish and run the migration included in the package to set up a `logins` table. This table name is configurable in the published `security-notifications.php` config file.
 
 ```console
-php artisan vendor:publish --provider="Zaengle\LaravelSecurityNotifications\PackageServiceProvider" --tag="migrations"
+php artisan vendor:publish --provider="Zaengle\LaravelSecurityNotifications\Providers\PackageServiceProvider" --tag="migrations"
 
 php artisan migrate
 ```
@@ -104,7 +104,7 @@ If you would like to disable sending notifications you can set the following con
 
 The package provides email notification templates out-of-the-box. However, if you would like to customize these templates to match your system, you may publish the views to your application and override them.
 
-`php artisan vendor:publish --provider="Zaengle\LaravelSecurityNotifications\PackageServiceProvider" --tag="views"`
+`php artisan vendor:publish --provider="Zaengle\LaravelSecurityNotifications\Providers\PackageServiceProvider" --tag="views"`
 
 They will be available under `resources/views/vendor/security-notifications`.
 
