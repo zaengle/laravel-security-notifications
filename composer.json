@@ -22,7 +22,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Zaengle\\LaravelSecurityNotifications\\PackageServiceProvider"
+        "Zaengle\\LaravelSecurityNotifications\\Providers\\PackageServiceProvider"
       ]
     }
   },
