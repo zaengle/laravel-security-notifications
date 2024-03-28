@@ -166,7 +166,7 @@
     
                 </td>
               </tr>
-            
+            @if ($login->location_data['status'] === 'success')
               <tr>
                 <td
                    align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;"
@@ -178,7 +178,7 @@
     
                 </td>
               </tr>
-            
+            @else
               <tr>
                 <td
                    align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;"
@@ -190,7 +190,7 @@
     
                 </td>
               </tr>
-            
+            @endif
               <tr>
                 <td
                    align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;"
