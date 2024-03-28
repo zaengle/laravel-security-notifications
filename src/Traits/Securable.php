@@ -21,10 +21,12 @@ trait Securable
             static::updated(function (Model $model) {
                 $changedSecureFields = collect($model->getChanges())->only(self::$secureFields);
 
-                $model->setAttribute('original_email', $model->getOriginal('email') ?? $model->getAttribute('email'));
-
                 if ($changedSecureFields->count()) {
-                    event(new SecureFieldsUpdated($model, $changedSecureFields->toArray()));
+                    event(new SecureFieldsUpdated(
+                        $model,
+                        $changedSecureFields->toArray(),
+                        $model->getOriginal('email')),
+                    );
                 }
             });
         }

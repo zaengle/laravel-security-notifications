@@ -8,16 +8,12 @@ use Illuminate\Foundation\Events\Dispatchable;
 
 class SecureFieldsUpdated
 {
-    use Dispatchable;
-    use SerializesModels;
+    use Dispatchable, SerializesModels;
 
-    /**
-     * @param Model $model
-     * @param array<string> $fields
-     */
     public function __construct(
         public readonly Model $model,
         public readonly array $fields,
+        public readonly string $original_email,
     ) {
     }
 }
