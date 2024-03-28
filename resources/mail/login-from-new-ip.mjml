@@ -9,7 +9,11 @@
             <mj-column background-color="#f0f8ff" padding="16px">
                 <mj-text>- Account: {{ $login->user->email }}</mj-text>
                 <mj-text>- IP: {{ $login->ip_address }}</mj-text>
-                <mj-text>- Location: {{ $login->location_data['city'] }}, {{ $login->location_data['region'] }}, {{ $login->location_data['countryCode'] }}</mj-text>
+                @if ($login->location_data['status'] === 'success')
+                    <mj-text>- Location: {{ $login->location_data['city'] }}, {{ $login->location_data['region'] }}, {{ $login->location_data['countryCode'] }}</mj-text>
+                @else
+                    <mj-text>- Location: Unknown</mj-text>
+                @endif
                 <mj-text>- Time: {{ $login->last_login_at->format('m/d/o, h:i:s A T') }}</mj-text>
                 <mj-text>If this is expected you may ignore this email. If not, please reset your password immediately.</mj-text>
             </mj-column>
