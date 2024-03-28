@@ -15,18 +15,18 @@ class PackageServiceProvider extends ServiceProvider
             ], 'config');
         }
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'security-notifications');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'security-notifications');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views/vendor/security-notifications'),
+                __DIR__.'/../../resources/views' => resource_path('views/vendor/security-notifications'),
             ], 'views');
         }
 
         if ($this->app->runningInConsole()) {
             if (! class_exists('CreateLoginsTable')) {
                 $this->publishes([
-                    __DIR__ . '/../database/migrations/create_logins_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', time()) . '_create_logins_table.php'),
+                    __DIR__ . '/../../database/migrations/create_logins_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', time()) . '_create_logins_table.php'),
                 ], 'migrations');
             }
         }
@@ -38,7 +38,7 @@ class PackageServiceProvider extends ServiceProvider
 
         $this->app->register(EventServiceProvider::class);
 
-        $this->mergeConfigFrom(__DIR__.'/../../../config/config.php', 'security-notifications');
+        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'security-notifications');
 
         $this->app->singleton('ip-address', fn () => new IPAddressHandler);
     }
