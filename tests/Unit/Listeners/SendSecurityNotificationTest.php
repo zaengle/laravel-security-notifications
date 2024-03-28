@@ -17,7 +17,7 @@ it('sends the security notification', function () {
             'email' => 'new@email.com',
             'username' => 'newusername',
             'password' => bcrypt('newpassword'),
-        ]),
+        ], $user->email),
     );
 
     Notification::assertSentOnDemand(SecureFieldsUpdatedNotification::class, function ($notification) {
