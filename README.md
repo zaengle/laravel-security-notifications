@@ -46,14 +46,17 @@ class User extends Authenticatable
 
 The `Securable` trait watches your user model for updates to the specified secure fields. By default, the secure fields are `email`, `username`, and `password`. If any of these fields are updated, a security notification will be sent to the user. The original email address will be notified in the event that the `email` field is updated.
 
-You may customize the secure fields by overriding the `$secureFields` attribute on your user model.
+You may customize the secure fields by overriding the `getSecureFields` method on your user model.
 
 ```php
-public static array $secureFields = [
-    // 'first_name',
-    // 'last_name',
-    // 'email',
-];
+public function getSecureFields(): array
+{
+    return [
+        'first_name',
+        'last_name',
+        'email',
+    ];
+}
 ```
 
 ### Securing Logins

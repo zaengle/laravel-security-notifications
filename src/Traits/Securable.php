@@ -9,7 +9,7 @@ use Zaengle\LaravelSecurityNotifications\Models\Login;
 
 trait Securable
 {
-    public static array $secureFields = [
+    public array $secureFields = [
         'email',
         'username',
         'password',
@@ -19,7 +19,7 @@ trait Securable
     {
         if (config('security-notifications.send_notifications')) {
             static::updated(function (Model $model) {
-                $changedSecureFields = collect($model->getChanges())->only(self::$secureFields);
+                $changedSecureFields = collect($model->getChanges())->only($model->getSecureFields());
 
                 if ($changedSecureFields->count()) {
                     event(new SecureFieldsUpdated(
@@ -30,6 +30,11 @@ trait Securable
                 }
             });
         }
+    }
+
+    public function getSecureFields(): array
+    {
+        return $this->secureFields;
     }
 
     public function logins(): MorphMany
