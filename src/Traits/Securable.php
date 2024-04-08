@@ -25,8 +25,8 @@ trait Securable
                     event(new SecureFieldsUpdated(
                         $model,
                         $changedSecureFields->toArray(),
-                        $model->getOriginal('email')) ?? $model->email,
-                    );
+                        $model->getOriginal('email') ?? $model->email,
+                    ));
                 }
             });
         }
