@@ -26,6 +26,7 @@ trait Securable
                         $model,
                         $changedSecureFields->toArray(),
                         $model->getOriginal('email') ?? $model->email,
+                        $model->updated_at,
                     ));
                 }
             });

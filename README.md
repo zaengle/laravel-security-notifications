@@ -113,7 +113,7 @@ They will be available under `resources/views/vendor/security-notifications`.
 
 There are two views that can be customized. Each with access to specific data:
 - `security-alert.blade.php`
-  - Has access to a `$fields` array which contains the fields that were updated.
+  - Has access to a `$fields` array which contains the fields that were updated. It also has access to the `$updated_at` variable which is a Carbon instance of when the fields were updated.
 - `login-from-new-ip.blade.php`
   - Has access to a `$login` variable which is an instance of the `Zaengle\LaravelSecurityNotifications\Models\Login` model.
 
