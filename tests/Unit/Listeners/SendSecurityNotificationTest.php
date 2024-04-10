@@ -13,11 +13,16 @@ it('sends the security notification', function () {
     $user = User::factory()->create();
 
     (new SendSecurityNotification)->handle(
-        new SecureFieldsUpdated($user, [
-            'email' => 'new@email.com',
-            'username' => 'newusername',
-            'password' => bcrypt('newpassword'),
-        ], $user->email),
+        new SecureFieldsUpdated(
+            $user,
+            [
+                'email' => 'new@email.com',
+                'username' => 'newusername',
+                'password' => bcrypt('newpassword'),
+            ],
+            $user->email,
+            $user->fresh()->updated_at,
+        ),
     );
 
     Notification::assertSentOnDemand(SecureFieldsUpdatedNotification::class, function ($notification) {
