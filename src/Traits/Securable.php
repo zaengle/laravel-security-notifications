@@ -17,8 +17,8 @@ trait Securable
 
     public static function bootSecurable(): void
     {
-        if (config('security-notifications.send_notifications')) {
-            static::updated(function (Model $model) {
+        static::updated(function (Model $model) {
+            if (config('security-notifications.send_notifications')) {
                 $changedSecureFields = collect($model->getChanges())->only($model->getSecureFields());
 
                 if ($changedSecureFields->count()) {
@@ -29,8 +29,8 @@ trait Securable
                         $model->refresh()->updated_at,
                     ));
                 }
-            });
-        }
+            }
+        });
     }
 
     public function getSecureFields(): array
