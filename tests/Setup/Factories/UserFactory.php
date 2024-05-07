@@ -16,6 +16,7 @@ class UserFactory extends TestBenchUserFactory
             'name' => $this->faker->name,
             'username' => $this->faker->unique()->userName,
             'email' => $this->faker->unique()->safeEmail,
+            'alternate_email' => $this->faker->unique()->safeEmail,
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
             'remember_token' => Str::random(10),

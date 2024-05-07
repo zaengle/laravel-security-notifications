@@ -128,6 +128,17 @@ If you would like to further customize the notifications, you can configure the 
 ],
 ```
 
+#### Customizing Email Address
+
+By default, this package assumes that the user model has an `email` attribute. If you would like to customize the email address that notifications are sent to, you can override the `sendSecurityEmailsTo` method on the models that utilize the `Securable` trait.
+
+```php
+public function sendSecurityEmailsTo(): string
+{
+    return $this->getOriginal('alternate_email') ?? $this->alternate_email;
+}
+````
+
 ### Custom IP Address Driver
 
 If you would like to have full control over IP address and login handling, you can create a custom driver by implementing the `Zaengle\LaravelSecurityNotifications\Services\DigestIPAddress` interface like the example below.

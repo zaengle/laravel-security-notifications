@@ -25,12 +25,17 @@ trait Securable
                     event(new SecureFieldsUpdated(
                         $model,
                         $changedSecureFields->toArray(),
-                        $model->getOriginal('email') ?? $model->email,
+                        $model->sendSecurityEmailsTo(),
                         $model->refresh()->updated_at,
                     ));
                 }
             }
         });
+    }
+
+    public function sendSecurityEmailsTo(): string
+    {
+        return $this->getOriginal('email') ?? $this->email;
     }
 
     public function getSecureFields(): array
