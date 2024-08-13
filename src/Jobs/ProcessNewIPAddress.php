@@ -52,4 +52,9 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
             $this->user->notify(new $notificationClass($login));
         }
     }
+
+    public function uniqueId(): string
+    {
+        return $this->userId.'-'.$this->ipAddress;
+    }
 }
