@@ -4,6 +4,7 @@ namespace Zaengle\LaravelSecurityNotifications\Jobs;
 
 use Exception;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -12,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 
-class ProcessNewIPAddress implements ShouldQueue
+class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
