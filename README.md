@@ -179,6 +179,16 @@ IPAddress::process([
 ]);
 ```
 
+### Allow multiple IP's with same location
+
+While this is not recommeded for most cases, you may run into a situation where users are on a network that changes IP addresses frequently (E.g. a public school network). In this case, the user is going to receive an email every time they log in because their IP address will have changed. This is probably not ideal. To account for this, you can configure the option to allow same location logins. This means that a user may login with as many IP addresses as they want and it will assume they are the same person as long as the location remains the same. This is based on the `city` and `state/region`.
+
+To enable this, add the following value to the package config:
+
+```
+'allow_same_location_login' => true,
+```
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
