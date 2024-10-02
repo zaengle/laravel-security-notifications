@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 use Zaengle\LaravelSecurityNotifications\Exceptions\IPAddressDriverMissingException;
 use Zaengle\LaravelSecurityNotifications\Facades\IPAddress;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
@@ -17,6 +18,19 @@ it('processes a new ip address', function () {
 
     $user = User::factory()->create();
 
+    Http::shouldReceive('get')
+        ->with('http://ip-api.com/json/127.0.0.1')
+        ->once()
+        ->andReturnSelf();
+    Http::shouldReceive('json')
+        ->once()
+        ->andReturn([
+            'query' => '127.0.0.1',
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+            'countryCode' => 'US',
+        ]);
+
     IPAddress::process([
         'ipAddress' => '127.0.0.1',
         'userId' => $user->getKey(),
@@ -24,7 +38,12 @@ it('processes a new ip address', function () {
     ]);
 
     Bus::assertDispatched(ProcessNewIPAddress::class, function ($job) use ($user) {
-        return $job->ipAddress === '127.0.0.1'
+        return $job->ipLocationData === [
+                'query' => '127.0.0.1',
+                'city' => 'Minneapolis',
+                'region' => 'MN',
+                'countryCode' => 'US',
+            ]
             && $job->userId === $user->getKey()
             && $job->userType === $user->getMorphClass();
     });
@@ -36,6 +55,19 @@ it('processes an existing ip address', function () {
         'last_login_at' => now()->subDays(5),
     ]);
 
+    Http::shouldReceive('get')
+        ->with('http://ip-api.com/json/'.$login->ip_address)
+        ->once()
+        ->andReturnSelf();
+    Http::shouldReceive('json')
+        ->once()
+        ->andReturn([
+            'query' => $login->ip_address,
+            'city' => $login->location_data['city'],
+            'region' => $login->location_data['region'],
+            'countryCode' => $login->location_data['countryCode'],
+        ]);
+
     IPAddress::process([
         'ipAddress' => $login->ip_address,
         'userId' => $login->user_id,
@@ -43,6 +75,87 @@ it('processes an existing ip address', function () {
     ]);
 
     expect($login->fresh()->last_login_at->toDateString())->toEqual(now()->toDateString());
+});
+
+it('processes same location for user as existing login if configured', function () {
+    Config::set('security-notifications.allow_same_location_login', true);
+
+    $login = Login::factory()->create([
+        'ip_address' => '128.0.0.1',
+        'first_login_at' => now()->subDays(10),
+        'last_login_at' => now()->subDays(5),
+        'location_data' => [
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+        ],
+    ]);
+
+    Http::shouldReceive('get')
+        ->with('http://ip-api.com/json/127.0.0.1')
+        ->once()
+        ->andReturnSelf();
+    Http::shouldReceive('json')
+        ->once()
+        ->andReturn([
+            'query' => '127.0.0.1',
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+            'countryCode' => 'US',
+        ]);
+
+    IPAddress::process([
+        'ipAddress' => '127.0.0.1',
+        'userId' => $login->user_id,
+        'userType' => $login->user_type,
+    ]);
+
+    expect($login->fresh()->last_login_at->toDateString())->toEqual(now()->toDateString())
+        ->and($login->fresh()->ip_address)->toEqual('127.0.0.1');
+});
+
+it('processes same location for user as new login if not configured', function () {
+    Bus::fake();
+
+    Config::set('security-notifications.allow_same_location_login', false);
+
+    $login = Login::factory()->create([
+        'first_login_at' => now()->subDays(10),
+        'last_login_at' => now()->subDays(5),
+        'location_data' => [
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+        ],
+    ]);
+
+    Http::shouldReceive('get')
+        ->with('http://ip-api.com/json/127.0.0.1')
+        ->once()
+        ->andReturnSelf();
+    Http::shouldReceive('json')
+        ->once()
+        ->andReturn([
+            'query' => '127.0.0.1',
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+            'countryCode' => 'US',
+        ]);
+
+    IPAddress::process([
+        'ipAddress' => '127.0.0.1',
+        'userId' => $login->user_id,
+        'userType' => $login->user_type,
+    ]);
+
+    Bus::assertDispatched(ProcessNewIPAddress::class, function ($job) use ($login) {
+        return $job->ipLocationData === [
+                'query' => '127.0.0.1',
+                'city' => 'Minneapolis',
+                'region' => 'MN',
+                'countryCode' => 'US',
+            ]
+            && $job->userId === $login->user->getKey()
+            && $job->userType === $login->user->getMorphClass();
+    });
 });
 
 it('processes an ip address with a custom driver', function () {

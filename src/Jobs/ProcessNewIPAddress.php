@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Arr;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 
 class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
@@ -20,7 +20,7 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
     protected ?Model $user;
 
     public function __construct(
-        public readonly string $ipAddress,
+        public readonly array $ipLocationData,
         public readonly int $userId,
         public readonly string $userType,
     )
@@ -34,16 +34,14 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
             throw new Exception('User does not exist.');
         }
 
-        $ipLocationData = Http::get('http://ip-api.com/json/'.$this->ipAddress)->json();
-
         /** @var Login $login */
         $login = Login::create([
-            'ip_address' => $this->ipAddress,
+            'ip_address' => Arr::get($this->ipLocationData, 'query'),
             'user_id' => $this->userId,
             'user_type' => $this->userType,
             'first_login_at' => now(),
             'last_login_at' => now(),
-            'location_data' => $ipLocationData,
+            'location_data' => $this->ipLocationData,
         ]);
 
         if (config('security-notifications.send_notifications')) {
@@ -55,6 +53,6 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
 
     public function uniqueId(): string
     {
-        return $this->userId.'-'.$this->ipAddress;
+        return $this->userId.'-'.Arr::get($this->ipLocationData, 'query');
     }
 }

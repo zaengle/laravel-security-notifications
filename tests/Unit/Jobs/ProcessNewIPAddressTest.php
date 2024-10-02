@@ -15,20 +15,13 @@ it('it processes a new ip address', function () {
 
     expect(Login::count())->toBe(0);
 
-    Http::shouldReceive('get')
-        ->with('http://ip-api.com/json/127.0.0.1')
-        ->once()
-        ->andReturnSelf();
-    Http::shouldReceive('json')
-        ->once()
-        ->andReturn([
+    (new ProcessNewIPAddress(
+        ipLocationData: [
+            'query' => '127.0.0.1',
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
-        ]);
-
-    (new ProcessNewIPAddress(
-        ipAddress: '127.0.0.1',
+        ],
         userId: $user->getKey(),
         userType: $user->getMorphClass(),
     ))->handle();
@@ -38,6 +31,7 @@ it('it processes a new ip address', function () {
         'user_id' => $user->getKey(),
         'user_type' => $user->getMorphClass(),
         'location_data' => json_encode([
+            'query' => '127.0.0.1',
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
