@@ -42,3 +42,35 @@ it('it processes a new ip address', function () {
         return $notification->login->ip_address === '127.0.0.1';
     });
 });
+
+it('does not send notification if disabled', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+
+    (new ProcessNewIPAddress(
+        ipLocationData: [
+            'query' => '127.0.0.1',
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+            'countryCode' => 'US',
+        ],
+        userId: $user->getKey(),
+        userType: $user->getMorphClass(),
+        sendNewIpNotification: false,
+    ))->handle();
+
+    assertDatabaseHas('logins', [
+        'ip_address' => '127.0.0.1',
+        'user_id' => $user->getKey(),
+        'user_type' => $user->getMorphClass(),
+        'location_data' => json_encode([
+            'query' => '127.0.0.1',
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+            'countryCode' => 'US',
+        ]),
+    ]);
+
+    Notification::assertNothingSent();
+});

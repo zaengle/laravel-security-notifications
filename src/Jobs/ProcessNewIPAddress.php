@@ -23,6 +23,7 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
         public readonly array $ipLocationData,
         public readonly int $userId,
         public readonly string $userType,
+        public readonly bool $sendNewIpNotification = true,
     )
     {
         $this->user = $this->userType::find($this->userId);
@@ -44,7 +45,7 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
             'location_data' => $this->ipLocationData,
         ]);
 
-        if (config('security-notifications.send_notifications')) {
+        if (config('security-notifications.send_notifications') && $this->sendNewIpNotification) {
             $notificationClass = config('security-notifications.notifications.secure_login');
 
             $this->user->notify(new $notificationClass($login));

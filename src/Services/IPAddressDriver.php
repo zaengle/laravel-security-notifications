@@ -10,9 +10,10 @@ use Zaengle\LaravelSecurityNotifications\Models\Login;
 readonly class IPAddressDriver implements DigestIPAddress
 {
     public function __construct(
-        private readonly string $ipAddress,
-        private readonly int $userId,
-        private readonly string $userType,
+        private string $ipAddress,
+        private int $userId,
+        private string $userType,
+        private bool $sendNewIpNotification = true,
     )
     {
     }
@@ -51,6 +52,7 @@ readonly class IPAddressDriver implements DigestIPAddress
                 ipLocationData: $ipLocationData,
                 userId: $this->userId,
                 userType: $this->userType,
+                sendNewIpNotification: $this->sendNewIpNotification,
             );
         }
     }
