@@ -4,7 +4,7 @@ namespace Zaengle\LaravelSecurityNotifications;
 
 use Zaengle\LaravelSecurityNotifications\Exceptions\IPAddressDriverMissingException;
 
-readonly class IPAddressHandler
+class IPAddressHandler
 {
     public function process(array $options): void
     {
