@@ -28,16 +28,17 @@ readonly class IPAddressDriver implements DigestIPAddress
                 'user_type' => $this->userType,
             ]);
 
+        $existenceCheckQuery = clone $loginQuery;
+
         if (config('security-notifications.allow_same_location_login')) {
-            $loginQuery = $loginQuery->where(function ($query) use ($ipLocationData) {
-                $query->where('ip_address', $this->ipAddress)
-                    ->orWhere(function ($query) use ($ipLocationData) {
-                        $query->where([
-                            'location_data->city' => Arr::get($ipLocationData, 'city'),
-                            'location_data->region' => Arr::get($ipLocationData, 'region'),
-                        ]);
-                    });
-            });
+            $loginQuery->when(
+                $existenceCheckQuery->where('ip_address', $this->ipAddress)->exists(),
+                fn ($query) => $query->where('ip_address', $this->ipAddress),
+                fn ($query) => $query->where([
+                    'location_data->city' => Arr::get($ipLocationData, 'city'),
+                    'location_data->region' => Arr::get($ipLocationData, 'region'),
+                ])
+            );
         } else {
             $loginQuery = $loginQuery->where('ip_address', $this->ipAddress);
         }

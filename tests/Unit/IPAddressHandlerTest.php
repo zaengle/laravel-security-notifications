@@ -3,12 +3,14 @@
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Zaengle\LaravelSecurityNotifications\Exceptions\IPAddressDriverMissingException;
 use Zaengle\LaravelSecurityNotifications\Facades\IPAddress;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Models\User;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Services\CustomIPAddressDriver;
+use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 
 it('processes a new ip address', function () {
@@ -78,6 +80,8 @@ it('processes an existing ip address', function () {
 });
 
 it('processes same location for user as existing login if configured', function () {
+    Notification::fake();
+
     Config::set('security-notifications.allow_same_location_login', true);
 
     $login = Login::factory()->create([
@@ -156,6 +160,54 @@ it('processes same location for user as new login if not configured', function (
             && $job->userId === $login->user->getKey()
             && $job->userType === $login->user->getMorphClass();
     });
+});
+
+it('updates correct login when multiple exist', function () {
+    Config::set('security-notifications.allow_same_location_login', true);
+
+    $user = User::factory()->create();
+
+    $login = Login::factory()->for($user)->create([
+        'ip_address' => '128.0.0.1',
+        'first_login_at' => now()->subDays(10),
+        'last_login_at' => now()->subDays(5),
+        'location_data' => [
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+        ],
+    ]);
+
+    Login::factory()->for($user)->create([
+        'ip_address' => '127.0.0.1',
+        'first_login_at' => now()->subDays(10),
+        'last_login_at' => now()->subDays(5),
+        'location_data' => [
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+        ],
+    ]);
+
+    Http::shouldReceive('get')
+        ->with('http://ip-api.com/json/128.0.0.1')
+        ->once()
+        ->andReturnSelf();
+    Http::shouldReceive('json')
+        ->once()
+        ->andReturn([
+            'query' => '128.0.0.1',
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+            'countryCode' => 'US',
+        ]);
+
+    IPAddress::process([
+        'ipAddress' => '128.0.0.1',
+        'userId' => $login->user_id,
+        'userType' => $login->user_type,
+    ]);
+
+    expect($login->fresh()->last_login_at->toDateString())->toEqual(now()->toDateString())
+        ->and($login->fresh()->ip_address)->toEqual('128.0.0.1');
 });
 
 it('processes an ip address with a custom driver', function () {
