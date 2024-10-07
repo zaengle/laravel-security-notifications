@@ -2,6 +2,7 @@
 
 namespace Zaengle\LaravelSecurityNotifications\Services;
 
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
@@ -20,7 +21,9 @@ readonly class IPAddressDriver implements DigestIPAddress
 
     public function handle(): void
     {
-        $ipLocationData = Http::get('http://ip-api.com/json/'.$this->ipAddress)->json();
+        $ipLocationData = Http::retry(3)->get('http://ip-api.com/json/'.$this->ipAddress)?->json();
+
+        throw_if(is_null($ipLocationData), new Exception('Failed to get IP location data for: '.$this->ipAddress));
 
         $loginQuery = Login::query()
             ->where([

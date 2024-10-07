@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -20,6 +21,8 @@ it('processes a new ip address', function () {
 
     $user = User::factory()->create();
 
+    Http::shouldReceive('retry')
+        ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/127.0.0.1')
         ->once()
@@ -57,6 +60,8 @@ it('processes an existing ip address', function () {
         'last_login_at' => now()->subDays(5),
     ]);
 
+    Http::shouldReceive('retry')
+        ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/'.$login->ip_address)
         ->once()
@@ -94,6 +99,8 @@ it('processes same location for user as existing login if configured', function 
         ],
     ]);
 
+    Http::shouldReceive('retry')
+        ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/127.0.0.1')
         ->once()
@@ -131,6 +138,8 @@ it('processes same location for user as new login if not configured', function (
         ],
     ]);
 
+    Http::shouldReceive('retry')
+        ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/127.0.0.1')
         ->once()
@@ -187,6 +196,8 @@ it('updates correct login when multiple exist', function () {
         ],
     ]);
 
+    Http::shouldReceive('retry')
+        ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/128.0.0.1')
         ->once()
@@ -232,3 +243,20 @@ it('throws an exception if the ip address driver is missing', function () {
         'ipAddress' => '127.0.0.1',
     ]);
 })->expectException(IPAddressDriverMissingException::class);
+
+it('fails if no ip location data', function () {
+    $login = Login::factory()->create();
+
+    Http::shouldReceive('retry')
+        ->andReturnSelf();
+    Http::shouldReceive('get')
+        ->with('http://ip-api.com/json/1234567890');
+    Http::shouldReceive('json')
+        ->never();
+
+    IPAddress::process([
+        'ipAddress' => '1234567890',
+        'userId' => $login->user_id,
+        'userType' => $login->user_type,
+    ]);
+})->expectException(Exception::class, 'Failed to get IP location data for: 1234567890');
