@@ -195,6 +195,14 @@ To enable this, add the following value to the package config:
 'allow_same_location_login' => true,
 ```
 
+## Using Paid API
+
+Be default, this package uses the free api provided by [ip-api.com](https://ip-api.com/). If you would like to use their [paid API](https://members.ip-api.com/) to increase rate limiting, you can set the following env value with your api key:
+
+```
+IP_API_KEY=your_api_key
+```
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.

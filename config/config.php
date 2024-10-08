@@ -23,4 +23,8 @@ return [
     // This is useful when using a network which switches IP addresses frequently. Not recommended for most use cases.
     // Will check if given user has logged in from the given city, and region.
     'allow_same_location_login' => false,
+
+    // This package uses the https://members.ip-api.com/ API to get the location data for an IP address.
+    // You can use a paid API key to increase the rate limit.
+    'ip-api-key' => env('IP_API_KEY'),
 ];

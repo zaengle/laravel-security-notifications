@@ -23,6 +23,8 @@ it('processes a new ip address', function () {
 
     Http::shouldReceive('retry')
         ->andReturnSelf();
+    Http::shouldReceive('withQueryParameters')
+        ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/127.0.0.1')
         ->once()
@@ -61,6 +63,8 @@ it('processes an existing ip address', function () {
     ]);
 
     Http::shouldReceive('retry')
+        ->andReturnSelf();
+    Http::shouldReceive('withQueryParameters')
         ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/'.$login->ip_address)
@@ -101,6 +105,8 @@ it('processes same location for user as existing login if configured', function 
 
     Http::shouldReceive('retry')
         ->andReturnSelf();
+    Http::shouldReceive('withQueryParameters')
+        ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/127.0.0.1')
         ->once()
@@ -139,6 +145,8 @@ it('processes same location for user as new login if not configured', function (
     ]);
 
     Http::shouldReceive('retry')
+        ->andReturnSelf();
+    Http::shouldReceive('withQueryParameters')
         ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/127.0.0.1')
@@ -197,6 +205,8 @@ it('updates correct login when multiple exist', function () {
     ]);
 
     Http::shouldReceive('retry')
+        ->andReturnSelf();
+    Http::shouldReceive('withQueryParameters')
         ->andReturnSelf();
     Http::shouldReceive('get')
         ->with('http://ip-api.com/json/128.0.0.1')
