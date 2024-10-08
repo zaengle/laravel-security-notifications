@@ -26,7 +26,7 @@ it('processes a new ip address', function () {
     Http::shouldReceive('withQueryParameters')
         ->andReturnSelf();
     Http::shouldReceive('get')
-        ->with('http://ip-api.com/json/127.0.0.1')
+        ->with('https://ip-api.com/json/127.0.0.1')
         ->once()
         ->andReturnSelf();
     Http::shouldReceive('json')
@@ -67,7 +67,7 @@ it('processes an existing ip address', function () {
     Http::shouldReceive('withQueryParameters')
         ->andReturnSelf();
     Http::shouldReceive('get')
-        ->with('http://ip-api.com/json/'.$login->ip_address)
+        ->with('https://ip-api.com/json/'.$login->ip_address)
         ->once()
         ->andReturnSelf();
     Http::shouldReceive('json')
@@ -108,7 +108,7 @@ it('processes same location for user as existing login if configured', function 
     Http::shouldReceive('withQueryParameters')
         ->andReturnSelf();
     Http::shouldReceive('get')
-        ->with('http://ip-api.com/json/127.0.0.1')
+        ->with('https://ip-api.com/json/127.0.0.1')
         ->once()
         ->andReturnSelf();
     Http::shouldReceive('json')
@@ -149,7 +149,7 @@ it('processes same location for user as new login if not configured', function (
     Http::shouldReceive('withQueryParameters')
         ->andReturnSelf();
     Http::shouldReceive('get')
-        ->with('http://ip-api.com/json/127.0.0.1')
+        ->with('https://ip-api.com/json/127.0.0.1')
         ->once()
         ->andReturnSelf();
     Http::shouldReceive('json')
@@ -209,7 +209,7 @@ it('updates correct login when multiple exist', function () {
     Http::shouldReceive('withQueryParameters')
         ->andReturnSelf();
     Http::shouldReceive('get')
-        ->with('http://ip-api.com/json/128.0.0.1')
+        ->with('https://ip-api.com/json/128.0.0.1')
         ->once()
         ->andReturnSelf();
     Http::shouldReceive('json')
@@ -270,3 +270,35 @@ it('fails if no ip location data', function () {
         'userType' => $login->user_type,
     ]);
 })->expectException(Exception::class, 'Failed to get IP location data for: 1234567890');
+
+it('uses pro endpoint if api key is set', function () {
+    Bus::fake();
+
+    Config::set('security-notifications.ip_api_key', 'test-key');
+
+    $user = User::factory()->create();
+
+    Http::shouldReceive('retry')
+        ->andReturnSelf();
+    Http::shouldReceive('withQueryParameters')
+        ->with(['key' => 'test-key'])
+        ->andReturnSelf();
+    Http::shouldReceive('get')
+        ->with('https://pro.ip-api.com/json/127.0.0.1')
+        ->once()
+        ->andReturnSelf();
+    Http::shouldReceive('json')
+        ->once()
+        ->andReturn([
+            'query' => '127.0.0.1',
+            'city' => 'Minneapolis',
+            'region' => 'MN',
+            'countryCode' => 'US',
+        ]);
+
+    IPAddress::process([
+        'ipAddress' => '127.0.0.1',
+        'userId' => $user->getKey(),
+        'userType' => $user->getMorphClass(),
+    ]);
+});
