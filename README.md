@@ -95,6 +95,12 @@ class LoginController extends Controller
 }
 ```
 
+### Disable Package
+
+If you would like to disable the entire package you can set the following config value:
+
+`'enabled' => false`
+
 ### Disable Notifications
 
 If you would like to disable sending notifications you can set the following config value:

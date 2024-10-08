@@ -1,6 +1,9 @@
 <?php
 
 return [
+    // Enable or disable the security package
+    'enabled' => true,
+
     // Configure whether security notifications should be sent
     'send_notifications' => true,
 
