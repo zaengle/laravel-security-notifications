@@ -21,12 +21,12 @@ readonly class IPAddressDriver implements DigestIPAddress
 
     public function handle(): void
     {
-        $endpoint = config('security-notifications.ip_api_key')
+        $endpoint = config('security-notifications.ip-api-key')
             ? 'https://pro.ip-api.com/json/'
             : 'https://ip-api.com/json/';
 
         $ipLocationData = Http::retry(3)
-            ->withQueryParameters(['key' => config('security-notifications.ip_api_key')])
+            ->withQueryParameters(['key' => config('security-notifications.ip-api-key')])
             ->get($endpoint.$this->ipAddress)
             ?->json();
 

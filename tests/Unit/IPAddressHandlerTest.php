@@ -274,7 +274,7 @@ it('fails if no ip location data', function () {
 it('uses pro endpoint if api key is set', function () {
     Bus::fake();
 
-    Config::set('security-notifications.ip_api_key', 'test-key');
+    Config::set('security-notifications.ip-api-key', 'test-key');
 
     $user = User::factory()->create();
 
