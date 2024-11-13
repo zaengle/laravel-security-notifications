@@ -31,3 +31,20 @@ it('sends the security notification', function () {
             && Arr::has($notification->fields, 'password');
     });
 });
+
+it('does not send the notification if the email is an empty string', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+
+    $event = (new SecureFieldsUpdated(
+        model: $user,
+        fields: [],
+        original_email: '',
+        updated_at: now(),
+    ));
+
+    (new SendSecurityNotification)->handle($event);
+
+    Notification::assertNothingSent();
+});
