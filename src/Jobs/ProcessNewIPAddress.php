@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 
 class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
@@ -35,13 +36,15 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
             throw new Exception('User does not exist.');
         }
 
+        $localizedTime = Carbon::now(Arr::get($this->ipLocationData, 'timezone', 'UTC'));
+
         /** @var Login $login */
         $login = Login::create([
             'ip_address' => Arr::get($this->ipLocationData, 'query'),
             'user_id' => $this->userId,
             'user_type' => $this->userType,
-            'first_login_at' => now(),
-            'last_login_at' => now(),
+            'first_login_at' => $localizedTime,
+            'last_login_at' => $localizedTime,
             'location_data' => $this->ipLocationData,
         ]);
 

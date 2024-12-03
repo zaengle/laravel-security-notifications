@@ -21,6 +21,7 @@ it('it processes a new ip address', function () {
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ],
         userId: $user->getKey(),
         userType: $user->getMorphClass(),
@@ -35,6 +36,7 @@ it('it processes a new ip address', function () {
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ]),
     ]);
 
@@ -54,6 +56,7 @@ it('does not send notification if disabled', function () {
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ],
         userId: $user->getKey(),
         userType: $user->getMorphClass(),
@@ -69,6 +72,7 @@ it('does not send notification if disabled', function () {
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ]),
     ]);
 

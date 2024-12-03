@@ -4,6 +4,7 @@ namespace Zaengle\LaravelSecurityNotifications\Services;
 
 use Exception;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
@@ -56,7 +57,7 @@ readonly class IPAddressDriver implements DigestIPAddress
         if ($login = $loginQuery->first()) {
             $login->update([
                 'ip_address' => $this->ipAddress,
-                'last_login_at' => now(),
+                'last_login_at' => Carbon::now(Arr::get($ipLocationData, 'timezone', 'UTC')),
             ]);
         } else {
             ProcessNewIPAddress::dispatch(
