@@ -22,6 +22,7 @@ class LoginFactory extends Factory
                 'city' => $this->faker->city,
                 'region' => 'MN',
                 'countryCode' => $this->faker->countryCode,
+                'timezone' => 'America/Chicago',
             ],
         ];
     }

@@ -4,6 +4,7 @@ namespace Zaengle\LaravelSecurityNotifications\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Arr;
 use Zaengle\LaravelSecurityNotifications\Events\SecureFieldsUpdated;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 
@@ -28,11 +29,13 @@ trait Securable
             $changedSecureFields = collect($model->getChanges())->only($model->getSecureFields());
 
             if ($changedSecureFields->count()) {
+                $timezone = Arr::get($model->logins()->latest()->first()?->location_data, 'timezone', 'UTC');
+
                 event(new SecureFieldsUpdated(
                     $model,
                     $changedSecureFields->toArray(),
                     $model->sendSecurityEmailsTo(),
-                    $model->refresh()->updated_at,
+                    $model->refresh()->updated_at->setTimezone($timezone),
                 ));
             }
         }
