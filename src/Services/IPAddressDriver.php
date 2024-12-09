@@ -3,10 +3,11 @@
 namespace Zaengle\LaravelSecurityNotifications\Services;
 
 use Exception;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
+use Zaengle\LaravelSecurityNotifications\Objects\IPLocationData;
 
 readonly class IPAddressDriver implements DigestIPAddress
 {
@@ -25,12 +26,18 @@ readonly class IPAddressDriver implements DigestIPAddress
             ? 'https://pro.ip-api.com/json/'
             : 'https://ip-api.com/json/';
 
-        $ipLocationData = Http::retry(3)
+        $ipResponse = Http::retry(3)
             ->withQueryParameters(['key' => config('security-notifications.ip-api-key')])
             ->get($endpoint.$this->ipAddress)
             ?->json();
 
-        throw_if(is_null($ipLocationData), new Exception('Failed to get IP location data for: '.$this->ipAddress));
+        throw_if(is_null($ipResponse), new Exception('Failed to get IP location data for: '.$this->ipAddress));
+
+        unset($ipResponse['query']);
+
+        $ipResponse['ipAddress'] = $this->ipAddress;
+
+        $ipLocationData = new IPLocationData($ipResponse);
 
         $loginQuery = Login::query()
             ->where([
@@ -42,21 +49,21 @@ readonly class IPAddressDriver implements DigestIPAddress
 
         if (config('security-notifications.allow_same_location_login')) {
             $loginQuery->when(
-                $existenceCheckQuery->where('ip_address', $this->ipAddress)->exists(),
-                fn ($query) => $query->where('ip_address', $this->ipAddress),
+                $existenceCheckQuery->where('ip_address', $ipLocationData['ipAddress'])->exists(),
+                fn ($query) => $query->where('ip_address', $ipLocationData['ipAddress']),
                 fn ($query) => $query->where([
-                    'location_data->city' => Arr::get($ipLocationData, 'city'),
-                    'location_data->region' => Arr::get($ipLocationData, 'region'),
+                    'location_data->city' => $ipLocationData['city'],
+                    'location_data->region' => $ipLocationData['region'],
                 ])
             );
         } else {
-            $loginQuery = $loginQuery->where('ip_address', $this->ipAddress);
+            $loginQuery = $loginQuery->where('ip_address', $ipLocationData['ipAddress']);
         }
 
         if ($login = $loginQuery->first()) {
             $login->update([
-                'ip_address' => $this->ipAddress,
-                'last_login_at' => now(),
+                'ip_address' => $ipLocationData['ipAddress'],
+                'last_login_at' => Carbon::now($ipLocationData['timezone']),
             ]);
         } else {
             ProcessNewIPAddress::dispatch(

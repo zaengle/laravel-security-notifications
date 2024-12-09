@@ -10,8 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
+use Zaengle\LaravelSecurityNotifications\Objects\IPLocationData;
 
 class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
 {
@@ -20,7 +21,7 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
     protected ?Model $user;
 
     public function __construct(
-        public readonly array $ipLocationData,
+        public readonly IPLocationData $ipLocationData,
         public readonly int $userId,
         public readonly string $userType,
         public readonly bool $sendNewIpNotification = true,
@@ -35,14 +36,16 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
             throw new Exception('User does not exist.');
         }
 
+        $localizedTime = Carbon::now($this->ipLocationData['timezone']);
+
         /** @var Login $login */
         $login = Login::create([
-            'ip_address' => Arr::get($this->ipLocationData, 'query'),
+            'ip_address' => $this->ipLocationData['ipAddress'],
             'user_id' => $this->userId,
             'user_type' => $this->userType,
-            'first_login_at' => now(),
-            'last_login_at' => now(),
-            'location_data' => $this->ipLocationData,
+            'first_login_at' => $localizedTime,
+            'last_login_at' => $localizedTime,
+            'location_data' => $this->ipLocationData->input,
         ]);
 
         if (config('security-notifications.send_notifications') && $this->sendNewIpNotification) {
@@ -54,6 +57,6 @@ class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
 
     public function uniqueId(): string
     {
-        return $this->userId.'-'.Arr::get($this->ipLocationData, 'query');
+        return $this->userId.'-'.$this->ipLocationData['ipAddress'];
     }
 }
