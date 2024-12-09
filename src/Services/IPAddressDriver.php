@@ -3,11 +3,11 @@
 namespace Zaengle\LaravelSecurityNotifications\Services;
 
 use Exception;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
+use Zaengle\LaravelSecurityNotifications\Objects\IPLocationData;
 
 readonly class IPAddressDriver implements DigestIPAddress
 {

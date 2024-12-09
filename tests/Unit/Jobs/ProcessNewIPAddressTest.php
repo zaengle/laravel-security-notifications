@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Notification;
 use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 use Zaengle\LaravelSecurityNotifications\Notifications\LoginFromNewIP;
-use Zaengle\LaravelSecurityNotifications\Services\IPLocationData;
+use Zaengle\LaravelSecurityNotifications\Objects\IPLocationData;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Models\User;
 use function Pest\Laravel\assertDatabaseHas;
 

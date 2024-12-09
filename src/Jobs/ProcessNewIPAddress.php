@@ -12,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
-use Zaengle\LaravelSecurityNotifications\Services\IPLocationData;
+use Zaengle\LaravelSecurityNotifications\Objects\IPLocationData;
 
 class ProcessNewIPAddress implements ShouldBeUnique, ShouldQueue
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Zaengle\LaravelSecurityNotifications\Services;
+namespace Zaengle\LaravelSecurityNotifications\Objects;
 
 use ArrayObject;
 use InvalidArgumentException;
