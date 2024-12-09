@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -11,7 +10,6 @@ use Zaengle\LaravelSecurityNotifications\Jobs\ProcessNewIPAddress;
 use Zaengle\LaravelSecurityNotifications\Models\Login;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Models\User;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Services\CustomIPAddressDriver;
-use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 
 it('processes a new ip address', function () {
@@ -36,6 +34,7 @@ it('processes a new ip address', function () {
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ]);
 
     IPAddress::process([
@@ -44,13 +43,9 @@ it('processes a new ip address', function () {
         'userType' => $user->getMorphClass(),
     ]);
 
-    Bus::assertDispatched(ProcessNewIPAddress::class, function ($job) use ($user) {
-        return $job->ipLocationData === [
-                'query' => '127.0.0.1',
-                'city' => 'Minneapolis',
-                'region' => 'MN',
-                'countryCode' => 'US',
-            ]
+    Bus::assertDispatched(ProcessNewIPAddress::class, function (ProcessNewIPAddress $job) use ($user) {
+        return $job->ipLocationData['ipAddress'] === '127.0.0.1'
+            && $job->ipLocationData['timezone'] === 'America/Chicago'
             && $job->userId === $user->getKey()
             && $job->userType === $user->getMorphClass();
     });
@@ -77,6 +72,7 @@ it('processes an existing ip address', function () {
             'city' => $login->location_data['city'],
             'region' => $login->location_data['region'],
             'countryCode' => $login->location_data['countryCode'],
+            'timezone' => $login->location_data['timezone'],
         ]);
 
     IPAddress::process([
@@ -98,8 +94,13 @@ it('processes same location for user as existing login if configured', function 
         'first_login_at' => now()->subDays(10),
         'last_login_at' => now()->subDays(5),
         'location_data' => [
+            'ipAddress' => '127.0.0.1',
             'city' => 'Minneapolis',
             'region' => 'MN',
+            'regionName' => 'Minnesota',
+            'country' => 'United States',
+            'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ],
     ]);
 
@@ -117,7 +118,10 @@ it('processes same location for user as existing login if configured', function 
             'query' => '127.0.0.1',
             'city' => 'Minneapolis',
             'region' => 'MN',
+            'regionName' => 'Minnesota',
+            'country' => 'United States',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ]);
 
     IPAddress::process([
@@ -159,6 +163,7 @@ it('processes same location for user as new login if not configured', function (
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ]);
 
     IPAddress::process([
@@ -167,13 +172,9 @@ it('processes same location for user as new login if not configured', function (
         'userType' => $login->user_type,
     ]);
 
-    Bus::assertDispatched(ProcessNewIPAddress::class, function ($job) use ($login) {
-        return $job->ipLocationData === [
-                'query' => '127.0.0.1',
-                'city' => 'Minneapolis',
-                'region' => 'MN',
-                'countryCode' => 'US',
-            ]
+    Bus::assertDispatched(ProcessNewIPAddress::class, function (ProcessNewIPAddress $job) use ($login) {
+        return $job->ipLocationData['ipAddress'] === '127.0.0.1'
+            && $job->ipLocationData['timezone'] === 'America/Chicago'
             && $job->userId === $login->user->getKey()
             && $job->userType === $login->user->getMorphClass();
     });
@@ -218,7 +219,10 @@ it('updates correct login when multiple exist', function () {
             'query' => '128.0.0.1',
             'city' => 'Minneapolis',
             'region' => 'MN',
+            'regionName' => 'Minnesota',
+            'country' => 'United States',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ]);
 
     IPAddress::process([
@@ -294,6 +298,7 @@ it('uses pro endpoint if api key is set', function () {
             'city' => 'Minneapolis',
             'region' => 'MN',
             'countryCode' => 'US',
+            'timezone' => 'America/Chicago',
         ]);
 
     IPAddress::process([

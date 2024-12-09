@@ -4,6 +4,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Zaengle\LaravelSecurityNotifications\Events\SecureFieldsUpdated;
+use Zaengle\LaravelSecurityNotifications\Models\Login;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Models\CustomUser;
 use Zaengle\LaravelSecurityNotifications\Tests\Setup\Models\User;
 
@@ -13,6 +14,8 @@ it('emits event when secure fields are updated', function () {
     ]);
 
     $user = User::factory()->create();
+
+    Login::factory()->for($user)->create();
 
     $originalEmail = $user->email;
 
