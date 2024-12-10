@@ -16,7 +16,9 @@ class IPAddressHandler
                 throw new IPAddressDriverMissingException("IP address driver [{$ipAddressDriver}] not found.");
             }
 
-            (new $ipAddressDriver(...(new IPAddressHandlerObject($options))->input))->handle();
+            (new $ipAddressDriver(
+                ...app(IPAddressHandlerObject::class, ['input' => $options])->input
+            ))->handle();
         }
     }
 }
