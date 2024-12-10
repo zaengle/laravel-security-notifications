@@ -3,6 +3,7 @@
 namespace Zaengle\LaravelSecurityNotifications;
 
 use Zaengle\LaravelSecurityNotifications\Exceptions\IPAddressDriverMissingException;
+use Zaengle\LaravelSecurityNotifications\Objects\IPAddressHandlerObject;
 
 class IPAddressHandler
 {
@@ -15,7 +16,9 @@ class IPAddressHandler
                 throw new IPAddressDriverMissingException("IP address driver [{$ipAddressDriver}] not found.");
             }
 
-            (new $ipAddressDriver(...$options))->handle();
+            (new $ipAddressDriver(
+                ...app(IPAddressHandlerObject::class, ['input' => $options])->input
+            ))->handle();
         }
     }
 }
